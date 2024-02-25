@@ -1,7 +1,7 @@
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import calendar
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# import calendar
 
 
 def load_data():
@@ -84,13 +84,25 @@ def store_with_highest_sales(df):
 
 
 # 7 - Preparando para calcular o método de pagamento mais popular por loja e mês
+# def popular_payment_method_by_store_month(df):
+#     return (
+#         df.groupby(["branch", "month", "payment_method"])["invoice_id"]
+#         .count()
+#         .unstack()
+#         .idxmax(axis=1)
+#     )
+
 def popular_payment_method_by_store_month(df):
-    return (
-        df.groupby(["branch", "month", "payment_method"])["invoice_id"]
-        .count()
-        .unstack()
-        .idxmax(axis=1)
-    )
+    # Preparar os dados agrupando por loja, mês e método de pagamento e contando o número de ocorrências
+    pagamento_por_loja_mes = df.groupby(['branch', 'month', 'payment_method'])['invoice_id'].count().reset_index()
+
+    # Pivotear os dados para obter o formato desejado para o gráfico
+    pivot_pagamento = pagamento_por_loja_mes.pivot_table(index=['branch', 'month'], columns='payment_method', values='invoice_id', fill_value=0)
+
+    # Normalizar os dados para obter proporções
+    pivot_normalizado = pivot_pagamento.div(pivot_pagamento.sum(axis=1), axis=0)
+
+    return pivot_normalizado
 
 
 # 8 - As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente

@@ -1,7 +1,8 @@
 import streamlit as st
 import plotly.express as px
-import seaborn as sns
-import matplotlib.pyplot as plt
+
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 from logic.calc import (
     load_data,
     total_sales,
@@ -11,7 +12,6 @@ from logic.calc import (
     top_5_rated_product_lines,
     store_with_highest_sales,
     popular_payment_method_by_store_month,
-
     top_3_by_gender,
     most_profitable_by_branch,
     most_profitable_by_quarter,
@@ -226,29 +226,70 @@ elif option == "Loja com Maior Volume de Vendas":
     # Exibindo o gráfico
     st.plotly_chart(fig, use_container_width=True)
 
+
 elif option == "Método de Pagamento Mais Popular por Loja e Mês":
-    st.write((pagamento_popular_por_loja_mes))
-    # popular_payment_method = pagamento_popular_por_loja_mes
+    # st.write(pagamento_popular_por_loja_mes)
+    # Preparar os dados
+    pagamento_popular_por_loja_mes = popular_payment_method_by_store_month(df)
+    pagamento_popular_por_loja_mes = pagamento_popular_por_loja_mes.reset_index()
+    pagamento_popular_por_loja_mes = pagamento_popular_por_loja_mes.melt(
+        id_vars=["branch", "month"], var_name="payment_method", value_name="value"
+    )
 
-    # # Criando um gráfico de barras empilhadas com Plotly
-    # fig = px.bar(
-    #     popular_payment_method.reset_index(),
-    #     x="branch",
-    #     y=popular_payment_method.columns.tolist(),
-    #     labels={"value": "Proporção", "branch": "Loja", "variable": "Método de Pagamento"},
-    #     title="Método de Pagamento Mais Popular por Loja e Mês",
-    #     height=800,
-    # )
+    # Criar uma nova coluna combinando 'branch' e 'month'
+    pagamento_popular_por_loja_mes["branch_month"] = (
+        pagamento_popular_por_loja_mes["branch"]
+        + " "
+        + pagamento_popular_por_loja_mes["month"].astype(str)
+    )
 
-    # # Personalizando o layout do gráfico
-    # fig.update_layout(
-    #     barmode="stack",
-    #     xaxis={"categoryorder": "total descending"},
-    #     yaxis_title="Proporção",
-    # )
+    # Multiplicar a coluna 'value' por 100
+    pagamento_popular_por_loja_mes["value"] = (
+        pagamento_popular_por_loja_mes["value"] * 100
+    )
 
-    # # Exibindo o gráfico
-    # st.plotly_chart(fig, use_container_width=True)
+    # Criar o gráfico de barras empilhadas
+    fig = px.bar(
+        pagamento_popular_por_loja_mes,
+        x="branch_month",
+        y="value",
+        color="payment_method",
+        text="value",  # Adicionando o valor no topo das barras
+        barmode="stack",
+        labels={
+            "branch_month": "Loja e Mês",
+            "value": "Proporção (%)",
+            "payment_method": "Método de Pagamento",
+        },
+        color_discrete_map={
+            "Ewallet": "#54BEBE",
+            "Credit card": "#dedad2",
+            "Cash": "#c80064",
+        },
+    )
+
+    # Personalizar o texto das barras
+    fig.update_traces(
+        texttemplate="%{text:.2f}%",  # Formatar o texto para mostrar duas casas decimais
+        textposition="inside",
+        textfont_size=12,
+        # textfont_color="white",
+    )
+
+    # Personalizar o layout do gráfico
+    fig.update_layout(
+        xaxis_title="Loja e Mês",
+        yaxis_title="Proporção (%)",
+        title="Método de Pagamento Mais Popular por Loja e Mês",
+        title_font=dict(size=30),
+        xaxis_tickangle=-45,
+        autosize=False,
+        height=800,
+        showlegend=True,
+    )
+
+    # Exibir o gráfico
+    st.plotly_chart(fig, use_container_width=True)
 
 
 elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
