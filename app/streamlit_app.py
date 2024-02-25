@@ -2,6 +2,8 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+from streamlit_option_menu import option_menu
+
 # import seaborn as sns
 # import matplotlib.pyplot as plt
 from logic.calc import (
@@ -454,3 +456,41 @@ elif option == "Produto Mais Lucrativo por Quarter":
 
 elif option == "Período do Dia com Mais Vendas":
     st.write(periodo_maior_vendas)
+    # Obtendo o número de vendas por período do dia
+    sales_by_time_period = period_with_most_sales(df)
+
+    # Mapeando as cores para os períodos do dia
+    # color_mapping = {"morning": "blue", "afternoon": "green", "evening": "red"}
+    color_mapping = {
+        "morning": "#54bebe",
+        # "morning": "#a9d8d7", # pastel color
+        "afternoon": "#f1f1f1",
+        # "evening": "#e590a7", # pastel color
+        "evening": "#c80064",
+    }
+
+    # Criando o gráfico de barras
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=sales_by_time_period["time_of_day"],
+                y=sales_by_time_period["sales_count"],
+                marker_color=[
+                    color_mapping[time] for time in sales_by_time_period["time_of_day"]
+                ],
+            )
+        ]
+    )
+
+    # Atualizando o layout do gráfico
+    fig.update_layout(
+        title_text="Número de Vendas por Período do Dia",
+        xaxis_title="Período do Dia",
+        yaxis_title="Número de Vendas",
+        autosize=False,
+        height=800,
+        showlegend=False,
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
