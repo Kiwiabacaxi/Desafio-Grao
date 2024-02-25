@@ -69,15 +69,35 @@ elif option == "Número Total de Produtos Vendidos":
     )
 
 elif option == "Média de Preço Unitário":
+    colors_spring_pastels = [
+        "#fd7f6f",
+        "#7eb0d5",
+        "#b2e061",
+        "#bd7ebe",
+        "#ffb55a",
+        "#ffee65",
+        "#beb9db",
+        "#fdcce5",
+        "#8bd3c7",
+    ]
+
+    colors_viridis_6 = [
+        "#fde725",
+        "#7ad151",
+        "#22a884",
+        "#2a788e",
+        "#414487",
+        "#440154",
+    ]
     # Criando um gráfico de barras personalizado com Plotly
     fig = px.bar(
         media_preco_unitario,
         x=media_preco_unitario.index,
-        # y="unit_price",
-        y=media_preco_unitario.values,
+        y="unit_price",
+        # y=media_preco_unitario.values,
         color=media_preco_unitario.index,
-        # color_discrete_sequence=px.colors.qualitative.Plotly,
-        template="xgridoff",
+        color_discrete_sequence=colors_spring_pastels,
+        # color_discrete_sequence=colors_viridis_6,
         labels={"UnitPrice": "Média de Preço Unitário", "Product": "Linha de Produto"},
     )
 
@@ -86,11 +106,11 @@ elif option == "Média de Preço Unitário":
         xaxis_title="Linha de Produto",
         yaxis_title="Preço Unitário Médio",
         title="Média de Preço Unitário por Linha de Produto",
-        title_font=dict(size=26),
+        title_font=dict(size=32),
         xaxis_tickangle=-45,
         yaxis=dict(range=[50, 60]),  # Definindo o limite inferior do eixo y para 50
-        autosize=False,
         height=800,
+        showlegend=False,
     )
 
     # Exibindo o gráfico
@@ -98,10 +118,72 @@ elif option == "Média de Preço Unitário":
 
 
 elif option == "Linha de Produto Mais Vendida":
-    st.write(linha_mais_vendida)
+    # st.write(linha_mais_vendida)
+
+    # color low hue RED
+    color_deemphasized = [
+        "#F0CBC5",
+        "#EA5543",  # Cor Forte
+    ]
+
+    # Criando um gráfico de barras com Plotly
+    fig = px.bar(
+        linha_mais_vendida,
+        x="product_line",
+        y="quantity",
+        color="is_most_sold",
+        labels={"product_line": "Linha de Produto", "quantity": "Quantidade Vendida"},
+        color_discrete_map={False: color_deemphasized[0], True: color_deemphasized[1]},
+    )
+
+    # Personalizando o layout do gráfico
+    fig.update_layout(
+        xaxis_title="Linha de Produto",
+        yaxis_title="Quantidade Vendida",
+        title="Linha de Produto Mais Vendida",
+        title_font=dict(size=32),
+        xaxis_tickangle=-45,
+        autosize=False,
+        yaxis=dict(range=[800, 1000]),  # Definindo o limite inferior do eixo y para 800
+        height=800,
+        showlegend=False,  # Escondendo a legenda
+    )
+
+    # Exibindo o gráfico
+    st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
-    st.write(top_5_avaliados)
+    # Definindo as cores
+    color_deemphasized = [
+        "#F0CBC5",
+        "#EA5543",  # Cor Forte
+    ]
+
+    # Criando um gráfico de barras com Plotly
+    fig = px.bar(
+        top_5_avaliados,
+        x="product_line",
+        y="rating",
+        color="is_top5",
+        labels={"product_line": "Linha de Produto", "rating": "Avaliação Média"},
+        color_discrete_map={False: color_deemphasized[0], True: color_deemphasized[1]},
+    )
+
+    # Personalizando o layout do gráfico
+    fig.update_layout(
+        xaxis_title="Linha de Produto",
+        yaxis_title="Avaliação Média",
+        title="Top 5 Linhas de Produtos Mais Bem Avaliados",
+        title_font=dict(size=32),
+        xaxis_tickangle=-45,
+        autosize=False,
+        height=800,
+        yaxis=dict(range=[6, 7.4]),  # Definindo o limite inferior do eixo y
+        showlegend=False,  # Escondendo a legenda
+    )
+
+    # Exibindo o gráfico
+    st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Loja com Maior Volume de Vendas":
     st.write(loja_maior_vendas)

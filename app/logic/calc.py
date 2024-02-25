@@ -25,50 +25,43 @@ def total_products_sold(df):
 def average_unit_price(df):
     return df.groupby("product_line")["unit_price"].mean()
 
-# 3 - Grafico de barras da média de preço unitário de linha de produtos
-def plot_average_unit_price(df):
-    # Calcular a média do preço unitário
-    average_unit_price = df.groupby("product_line")["unit_price"].mean()
-
-    # Criando um gráfico de barras personalizado com SEABORN
-    plt.figure(figsize=(10, 8))
-    barplot = sns.barplot(
-        x=average_unit_price.index,
-        y=average_unit_price.values,
-        hue=average_unit_price.index,
-        palette="viridis",
-    )
-
-    # Adicionando o valor de cada barra no topo
-    for p in barplot.patches:
-        barplot.annotate(
-            format(p.get_height(), ".2f"),
-            (p.get_x() + p.get_width() / 2.0, p.get_height()),
-            ha="center",
-            va="center",
-            xytext=(0, 9),
-            textcoords="offset points",
-        )
-
-    plt.title("Média de Preço Unitário por Linha de Produto")
-    plt.xlabel("Linha de Produto")
-    plt.ylabel("Preço Unitário Médio")
-    plt.xticks(rotation=45)
-
-    # Deixar o eixo y a partir de 50
-    # plt.ylim(50, None)
-
-    plt.show()
-
 
 # 4 - Linha de produto mais vendido (em termos de quantidade)
+# def most_sold_product_line(df):
+#     return df.groupby("product_line")["quantity"].sum().idxmax()
 def most_sold_product_line(df):
-    return df.groupby("product_line")["quantity"].sum().idxmax()
+    # Calcule a quantidade vendida por linha de produto
+    quantity_per_product_line = (
+        df.groupby("product_line")["quantity"].sum().reset_index()
+    )
+
+    # Encontre a linha de produto mais vendida
+    most_sold_product = quantity_per_product_line.loc[
+        quantity_per_product_line["quantity"].idxmax(), "product_line"
+    ]
+
+    # Crie uma nova coluna que é True para a linha de produto mais vendida e False para as outras
+    quantity_per_product_line["is_most_sold"] = (
+        quantity_per_product_line["product_line"] == most_sold_product
+    )
+
+    return quantity_per_product_line
 
 
 # 5 - As 5 linhas de produtos mais bem avaliados (média de rating mais alta)
+# def top_5_rated_product_lines(df):
+#     return df.groupby("product_line")["rating"].mean().nlargest(5)
 def top_5_rated_product_lines(df):
-    return df.groupby("product_line")["rating"].mean().nlargest(5)
+    # Calcule a média de rating para cada linha de produto
+    average_rating = df.groupby("product_line")["rating"].mean().reset_index()
+
+    # Selecione as 5 linhas de produtos com a média de rating mais alta
+    top5_product_lines = average_rating.nlargest(5, "rating").index
+
+    # Crie uma nova coluna que é True para as top 5 linhas de produtos e False para as outras
+    average_rating["is_top5"] = average_rating.index.isin(top5_product_lines)
+
+    return average_rating
 
 
 # 6 - Loja com o maior volume de vendas
