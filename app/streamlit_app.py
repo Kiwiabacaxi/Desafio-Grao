@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 # import seaborn as sns
 # import matplotlib.pyplot as plt
@@ -293,7 +294,62 @@ elif option == "Método de Pagamento Mais Popular por Loja e Mês":
 
 
 elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
-    st.write(top_3_por_genero)
+    # st.write(top_3_por_genero)
+    # Separando os dados por gênero
+    male_data = top_3_por_genero[top_3_por_genero["gender"] == "Male"]
+    female_data = top_3_por_genero[top_3_por_genero["gender"] == "Female"]
+
+    # Definindo as cores padrão para todas as barras
+    male_colors = [
+        "lightslategray",
+    ] * len(male_data)
+    female_colors = [
+        "lightslategray",
+    ] * len(female_data)
+
+    # Alterando a cor das barras para 'crimson' se 'is_top_3' for True
+    male_colors = [
+        "crimson" if is_top_3 else color
+        for color, is_top_3 in zip(male_colors, male_data["is_top_3"])
+    ]
+    female_colors = [
+        "crimson" if is_top_3 else color
+        for color, is_top_3 in zip(female_colors, female_data["is_top_3"])
+    ]
+
+    # Criando as séries de barras
+    male_bars = go.Bar(
+        name="Male",
+        x=male_data["product_line"],
+        y=male_data["quantity"],
+        marker_color=male_colors,
+    )
+
+    female_bars = go.Bar(
+        name="Female",
+        x=female_data["product_line"],
+        y=female_data["quantity"],
+        marker_color=female_colors,
+    )
+
+    # Criando o gráfico de barras
+    fig = go.Figure(data=[male_bars, female_bars])
+
+    # Atualizando o layout para empilhar as barras lado a lado
+    fig.update_layout(
+        barmode="group",
+        title_text="Top 3 Linhas de Produtos Mais Vendidos por Gênero",
+        xaxis_title="Linha de Produto",
+        yaxis_title="Quantidade Vendida",
+        title_font=dict(size=30),
+        xaxis_tickangle=-45,
+        autosize=False,
+        height=800,
+        showlegend=True, # as vezes fica melhor sem a legenda, testar
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Produto Mais Lucrativo por Filial":
     st.write(lucrativo_por_filial)

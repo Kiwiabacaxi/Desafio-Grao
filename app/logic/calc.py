@@ -91,13 +91,21 @@ def store_with_highest_sales(df):
 #         .unstack()
 #         .idxmax(axis=1)
 #     )
-
 def popular_payment_method_by_store_month(df):
     # Preparar os dados agrupando por loja, mês e método de pagamento e contando o número de ocorrências
-    pagamento_por_loja_mes = df.groupby(['branch', 'month', 'payment_method'])['invoice_id'].count().reset_index()
+    pagamento_por_loja_mes = (
+        df.groupby(["branch", "month", "payment_method"])["invoice_id"]
+        .count()
+        .reset_index()
+    )
 
     # Pivotear os dados para obter o formato desejado para o gráfico
-    pivot_pagamento = pagamento_por_loja_mes.pivot_table(index=['branch', 'month'], columns='payment_method', values='invoice_id', fill_value=0)
+    pivot_pagamento = pagamento_por_loja_mes.pivot_table(
+        index=["branch", "month"],
+        columns="payment_method",
+        values="invoice_id",
+        fill_value=0,
+    )
 
     # Normalizar os dados para obter proporções
     pivot_normalizado = pivot_pagamento.div(pivot_pagamento.sum(axis=1), axis=0)
@@ -106,13 +114,70 @@ def popular_payment_method_by_store_month(df):
 
 
 # 8 - As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente
+# def top_3_by_gender(df):
+#     return (
+#         df.groupby(["gender", "product_line"])["quantity"]
+#         .sum()
+#         .groupby(level=0, group_keys=False)
+#         .nlargest(3)
+#     )
+# def top_3_by_gender(df):
+#     # Agrupando os dados por gênero e linha de produto para somar as quantidades vendidas
+#     gender_product_sales = (
+#         df.groupby(["gender", "product_line"])["quantity"].sum().reset_index()
+#     )
+
+#     # Identificando as 3 linhas de produtos mais vendidas por gênero
+#     top_gender_product_sales = (
+#         gender_product_sales.groupby("gender")
+#         .apply(lambda x: x.nlargest(3, "quantity"))
+#         .reset_index(drop=True)
+#     )
+
+#     # Adicionando a coluna 'is_top_3'
+#     gender_product_sales["is_top_3"] = gender_product_sales.apply(
+#         lambda x: "Top 3"
+#         if (x["gender"], x["product_line"])
+#         in list(
+#             zip(
+#                 top_gender_product_sales["gender"],
+#                 top_gender_product_sales["product_line"],
+#             )
+#         )
+#         else "Outros",
+#         axis=1,
+#     )
+
+
+#     return gender_product_sales
 def top_3_by_gender(df):
-    return (
-        df.groupby(["gender", "product_line"])["quantity"]
-        .sum()
-        .groupby(level=0, group_keys=False)
-        .nlargest(3)
+    # Agrupando os dados por gênero e linha de produto para somar as quantidades vendidas
+    gender_product_sales = (
+        df.groupby(["gender", "product_line"])["quantity"].sum().reset_index()
     )
+
+    # Identificando as 3 linhas de produtos mais vendidas por gênero
+    top_gender_product_sales = (
+        gender_product_sales.groupby("gender")
+        .apply(lambda x: x.nlargest(3, "quantity"))
+        .reset_index(drop=True)
+    )
+
+    # Adicionando a coluna 'is_top_3'
+    gender_product_sales["is_top_3"] = gender_product_sales.apply(
+        lambda x: True
+        if (x["gender"], x["product_line"])
+        in list(
+            zip(
+                top_gender_product_sales["gender"],
+                top_gender_product_sales["product_line"],
+            )
+        )
+        else False,
+        axis=1,
+    )
+
+    return gender_product_sales
 
 
 # 9 - Produto mais lucrativo (maior receita gross_income) por filial (branch)
