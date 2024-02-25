@@ -133,13 +133,23 @@
 
     # pallete gen - crimson
     color_pallete_6 = [
-        "#f93d5e0",
+        "#f93d5e",
         "#fa636e",
         "#fa8080",
         "#f99b94",
         "#f6b3ac",
         "#f0cbc5",
     ]
+
+    gen_color_pallete_6 = [
+        "#F93D5E",
+        "#3CBCF0",
+        "#F0673C",
+        "#3CF0C2",
+        "#9B6A5A",
+        "#705459",
+    ]
+
     
 
     ````

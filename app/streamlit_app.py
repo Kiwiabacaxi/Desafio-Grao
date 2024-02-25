@@ -61,10 +61,19 @@ options = [
 ]
 
 # Adicionando um painel lateral
-option = st.sidebar.selectbox(
-    "Escolha a métrica que deseja visualizar",
-    options,
-)
+# option = st.sidebar.selectbox(
+#     "Escolha a métrica que deseja visualizar",
+#     options,
+# )
+with st.sidebar:
+    st.title("Dashboard")
+    option = option_menu(
+        # menu_title="Escolha a métrica que deseja visualizar",
+        menu_title="Menu",
+        menu_icon="cast",
+        options=options,
+        default_index=0,
+    )
 
 # Exibindo apenas o contêiner correspondente à opção selecionada
 if option == "Total de Vendas no Período":
@@ -76,25 +85,14 @@ elif option == "Número Total de Produtos Vendidos":
     )
 
 elif option == "Média de Preço Unitário":
-    colors_spring_pastels = [
-        "#fd7f6f",
-        "#7eb0d5",
-        "#b2e061",
-        "#bd7ebe",
-        "#ffb55a",
-        "#ffee65",
-        "#beb9db",
-        "#fdcce5",
-        "#8bd3c7",
-    ]
-
-    colors_viridis_6 = [
-        "#fde725",
-        "#7ad151",
-        "#22a884",
-        "#2a788e",
-        "#414487",
-        "#440154",
+    color_pink_foam_7 = [
+        "#54bebe",
+        "#90cfcf",
+        "#c2e0df",
+        "#f1f1f1",
+        "#ebb0bf",
+        "#dd6e90",
+        "#c80064",
     ]
 
     # Criando um gráfico de barras personalizado com Plotly
@@ -104,8 +102,7 @@ elif option == "Média de Preço Unitário":
         y="unit_price",
         # y=media_preco_unitario.values,
         color=media_preco_unitario.index,
-        # color_discrete_sequence=colors_spring_pastels,
-        color_discrete_sequence=colors_viridis_6,
+        color_discrete_sequence=color_pink_foam_7,
         labels={"UnitPrice": "Média de Preço Unitário", "Product": "Linha de Produto"},
     )
 
