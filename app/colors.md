@@ -200,7 +200,7 @@
         "#ff9ea7",
         "#ff808f",
         "#ff5e79",
-        "#ff2e63",
+        "#ff2e63", # Main Color
     ]
 
     # redux pink phoan palette divergent 5

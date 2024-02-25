@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from PIL import Image
 
 from streamlit_option_menu import option_menu
 
@@ -55,10 +56,10 @@ periodo_maior_vendas = period_with_most_sales(df)
 #############################################################
 
 # Dashboard
-# st.title("Dashboard de Desempenho de Vendas")
+im = Image.open("app/img/favicon.ico")
 st.set_page_config(
     page_title="Dashboard",
-    page_icon=":bar_chart:",
+    page_icon=im,
     layout="wide",
 )
 
