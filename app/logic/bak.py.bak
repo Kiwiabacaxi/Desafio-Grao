@@ -1,0 +1,104 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+
+# Carregar o dataset
+df = pd.read_csv("./data/commerce_dataset_clean.csv", sep=";", decimal=".")
+
+# Exibir as primeiras linhas do DataFrame para conferir a estrutura dos dados corretamente
+# df
+
+# Calculando as métricas solicitadas
+
+# Total de vendas no período
+total_vendas = df["total"].sum()
+
+# Número total de produtos vendidos
+total_produtos_vendidos = df["quantity"].sum()
+
+# Média de preço unitário de linha de produtos
+media_preco_unitario = df.groupby("product_line")["unit_price"].mean()
+
+# Linha de produto mais vendido (em termos de quantidade)
+linha_mais_vendida = df.groupby("product_line")["quantity"].sum().idxmax()
+
+# As 5 linhas de produtos mais bem avaliados (média de rating mais alta)
+top_5_avaliados = df.groupby("product_line")["rating"].mean().nlargest(5)
+
+# Loja com o maior volume de vendas
+loja_maior_vendas = df.groupby("branch")["total"].sum().idxmax()
+
+# Preparando para calcular o método de pagamento mais popular por loja e mês
+pagamento_popular_por_loja_mes = (
+    df.groupby(["branch", "month", "payment_method"])["invoice_id"]
+    .count()
+    .unstack()
+    .idxmax(axis=1)
+)
+
+# As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente
+top_3_por_genero = (
+    df.groupby(["gender", "product_line"])["quantity"]
+    .sum()
+    .groupby(level=0, group_keys=False)
+    .nlargest(3)
+)
+
+# Produto mais lucrativo (maior receita gross_income) por filial (branch)
+lucrativo_por_filial = (
+    df.groupby(["branch", "product_line"])["gross_income"]
+    .sum()
+    .groupby(level=0, group_keys=False)
+    .nlargest(1)
+)
+
+# Produto mais lucrativo (maior receita gross_income) por quarter
+lucrativo_por_quarter = (
+    df.groupby(["quarter", "product_line"])["gross_income"]
+    .sum()
+    .groupby(level=0, group_keys=False)
+    .nlargest(1)
+)
+
+# Período do dia em que ocorre o maior número de vendas
+periodo_maior_vendas = df["time_of_day"].value_counts().idxmax()
+
+# (total_vendas, total_produtos_vendidos, media_preco_unitario, linha_mais_vendida, top_5_avaliados, loja_maior_vendas,
+#  pagamento_popular_por_loja_mes, top_3_por_genero, lucrativo_por_filial, lucrativo_por_quarter, periodo_maior_vendas)
+
+
+# Dashboard
+st.title("Dashboard de Desempenho de Vendas")
+
+# Adicionando um painel lateral
+option = st.sidebar.selectbox(
+    "Escolha a métrica que deseja visualizar",
+    (
+        "Total de Vendas no Período",
+        "Número Total de Produtos Vendidos",
+        "Média de Preço Unitário",
+        "Linha de Produto Mais Vendida",
+        "Top 5 Linhas de Produtos Mais Bem Avaliados",
+        "Loja com Maior Volume de Vendas",
+    ),
+)
+
+if option == "Total de Vendas no Período":
+    st.metric(label="Total de Vendas no Período", value=f"R$ {total_vendas:,.2f}")
+elif option == "Número Total de Produtos Vendidos":
+    st.metric(
+        label="Número Total de Produtos Vendidos", value=f"{total_produtos_vendidos}"
+    )
+elif option == "Média de Preço Unitário":
+    st.write(media_preco_unitario)
+elif option == "Linha de Produto Mais Vendida":
+    st.write(linha_mais_vendida)
+elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
+    st.write(top_5_avaliados)
+elif option == "Loja com Maior Volume de Vendas":
+    st.write(loja_maior_vendas)
+
+# Para gráficos, você pode usar st.bar_chart, st.line_chart, etc.
+# Exemplo:
+st.bar_chart(df.groupby("product_line")["total"].sum())
