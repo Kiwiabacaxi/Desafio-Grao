@@ -8,6 +8,11 @@ from streamlit_option_menu import option_menu
 # import matplotlib.pyplot as plt
 from logic.calc import (
     load_data,
+    overview,
+    describe,
+    data_types,
+    duplicated_values,
+    missing_values,
     total_sales,
     total_products_sold,
     average_unit_price,
@@ -23,6 +28,13 @@ from logic.calc import (
 
 # Carregar o dataset
 df = load_data()
+
+# Visão geral do dataset
+visao_geral = overview(df)
+descrever = describe(df)
+tipos_dados = data_types(df)
+valores_duplicados = duplicated_values(df)
+valores_nulos = missing_values(df)
 
 # Calculando as métricas solicitadas
 total_vendas = total_sales(df)
@@ -44,9 +56,15 @@ periodo_maior_vendas = period_with_most_sales(df)
 
 # Dashboard
 # st.title("Dashboard de Desempenho de Vendas")
+st.set_page_config(
+    page_title="Dashboard",
+    page_icon=":bar_chart:",
+    layout="wide",
+)
 
 # Definindo as opções
 options = [
+    "Visão Geral do Dataset",
     "Total de Vendas no Período",
     "Número Total de Produtos Vendidos",
     "Média de Preço Unitário",
@@ -60,28 +78,77 @@ options = [
     "Período do Dia com Mais Vendas",
 ]
 
-# Adicionando um painel lateral
-# option = st.sidebar.selectbox(
-#     "Escolha a métrica que deseja visualizar",
-#     options,
-# )
 with st.sidebar:
     st.title("Dashboard")
     option = option_menu(
         # menu_title="Escolha a métrica que deseja visualizar",
-        menu_title="Menu",
+        # menu_title="Menu",
+        menu_title="Metricas",
         menu_icon="cast",
         options=options,
         default_index=0,
+        styles={
+            "container": {
+                # "padding": "0!important",
+                "background-color": "#393e48"
+            },
+            "icon": {"color": "#f1f1f1", "font-size": "14px"},
+            "nav-link": {
+                # "font-size": "25px",
+                "text-align": "left",
+                "margin": "5px",
+                "--hover-color": "#505764",
+            },
+            "nav-link-selected": {
+                "background-color": "#ff2e63",
+            },
+        },
     )
 
-# Exibindo apenas o contêiner correspondente à opção selecionada
-if option == "Total de Vendas no Período":
-    st.metric(label="Total de Vendas no Período", value=f"R$ {total_vendas:,.2f}")
+
+if option == "Visão Geral do Dataset":
+    # Exibindo a visão geral do datase
+    st.subheader("Visão Geral do Dataset")
+    st.dataframe(visao_geral)
+
+    # Exibindo informações adicionais
+    st.subheader("Informações Adicionais")
+    st.table(descrever)
+
+    # Exibindo os tipos de dados
+    tipos_dados.columns = ["Nome da Coluna", "Tipo de Dado"]
+    st.subheader("Tipos de Dados")
+    st.table(tipos_dados)
+
+    # Exibindo valores nulos
+    st.subheader("Valores Nulos")
+    st.table(valores_nulos)
+
+    # Exibindo valores duplicados
+    st.subheader("Valores Duplicados")
+    st.write(f"Total de Valores Duplicados: {valores_duplicados}")
+
+
+elif option == "Total de Vendas no Período":
+    st.markdown(
+        f"""
+    <div style="display: flex; flex-direction: column; text-align: center;">
+        <h2 style="font-size: 32px; font-weight: bold;">Total de Vendas no Período</h2>
+        <h1 style="font-size: 48px;">R$ {total_vendas:,.2f}</h1>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 elif option == "Número Total de Produtos Vendidos":
-    st.metric(
-        label="Número Total de Produtos Vendidos", value=f"{total_produtos_vendidos}"
+    st.markdown(
+        f"""
+    <div style="display: flex; flex-direction: column; text-align: center;">
+        <h2 style="font-size: 32px; font-weight: bold;">Número Total de Produtos Vendidos</h2>
+        <h1 style="font-size: 48px;">{total_produtos_vendidos}</h1>
+    </div>
+    """,
+        unsafe_allow_html=True,
     )
 
 elif option == "Média de Preço Unitário":
@@ -124,11 +191,10 @@ elif option == "Média de Preço Unitário":
 
 elif option == "Linha de Produto Mais Vendida":
     # st.write(linha_mais_vendida)
-
     # color low hue RED
     color_deemphasized = [
         "#F0CBC5",
-        "#F93D5E",  # Cor Forte
+        "#FF2E63",  # Cor Forte v3 - crimson_v3
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -161,7 +227,7 @@ elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
     # Definindo as cores
     color_deemphasized = [
         "#F0CBC5",
-        "#F93D5E",  # Cor Forte
+        "#FF2E63",  # Cor Forte v3 - crimson_v3
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -195,7 +261,7 @@ elif option == "Loja com Maior Volume de Vendas":
     # Definindo as cores
     color_deemphasized = [
         "#F0CBC5",
-        "#F93D5E",  # Cor Forte v2 - crimson
+        "#FF2E63",  # Cor Forte v3 - crimson_v3
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -261,10 +327,15 @@ elif option == "Método de Pagamento Mais Popular por Loja e Mês":
             "value": "Proporção (%)",
             "payment_method": "Método de Pagamento",
         },
+        # color_discrete_map={
+        #     "Ewallet": "#54BEBE",
+        #     "Credit card": "#dedad2",
+        #     "Cash": "#c80064",
+        # },
         color_discrete_map={
-            "Ewallet": "#54BEBE",
-            "Credit card": "#dedad2",
-            "Cash": "#c80064",
+            "Ewallet": "#54bebe",
+            "Credit card": "#f1f1f1",
+            "Cash": "#ff2e63",
         },
     )
 
@@ -281,7 +352,7 @@ elif option == "Método de Pagamento Mais Popular por Loja e Mês":
         xaxis_title="Loja e Mês",
         yaxis_title="Proporção (%)",
         title="Método de Pagamento Mais Popular por Loja e Mês",
-        title_font=dict(size=30),
+        title_font=dict(size=32),
         xaxis_tickangle=-45,
         autosize=False,
         height=800,
@@ -306,13 +377,13 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
         "#F0CBC5",
     ] * len(female_data)
 
-    # Alterando a cor das barras para '#F93D5E' se 'is_top_3' for True
+    # Alterando a cor das barras para '#FF2E63' se 'is_top_3' for True
     male_colors = [
-        "#F93D5E" if is_top_3 else color
+        "#FF2E63" if is_top_3 else color
         for color, is_top_3 in zip(male_colors, male_data["is_top_3"])
     ]
     female_colors = [
-        "#F93D5E" if is_top_3 else color
+        "#FF2E63" if is_top_3 else color
         for color, is_top_3 in zip(female_colors, female_data["is_top_3"])
     ]
 
@@ -340,9 +411,10 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
         title_text="Top 3 Linhas de Produtos Mais Vendidos por Gênero",
         xaxis_title="Linha de Produto",
         yaxis_title="Quantidade Vendida",
-        title_font=dict(size=30),
+        title_font=dict(size=32),
         xaxis_tickangle=-45,
         autosize=False,
+        yaxis=dict(range=[300, 600]),  # Definindo o limite inferior do eixo y
         height=800,
         showlegend=False,
     )
@@ -351,12 +423,12 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
     st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Produto Mais Lucrativo por Filial":
-    st.write(lucrativo_por_filial)
+    # st.write(lucrativo_por_filial)
     # Definindo a escala de cores
-    colors = [  # -> ou trocar por viridis ??????
-        "#54BEBE",
-        "#dedad2",
-        "#c80064",
+    colors = [
+        "#54bebe",
+        "#f1f1f1",
+        "#ff2e63",
     ]
     # Obtendo os dados mais lucrativos por filial
     lucrativo_por_filial = most_profitable_by_branch(df)
@@ -384,7 +456,7 @@ elif option == "Produto Mais Lucrativo por Filial":
         title_text="Produto Mais Lucrativo por Filial",
         xaxis_title="Filial",
         yaxis_title="Lucro",
-        title_font=dict(size=30),
+        title_font=dict(size=32),
         xaxis_tickangle=-45,
         autosize=False,
         yaxis=dict(range=[800, 1200]),  # Definindo o limite inferior do eixo y
@@ -397,25 +469,27 @@ elif option == "Produto Mais Lucrativo por Filial":
 
 
 elif option == "Produto Mais Lucrativo por Quarter":
-    st.write(lucrativo_por_quarter)
+    # st.write(lucrativo_por_quarter)
     # Obtendo os dados mais lucrativos por quarter
     lucrativo_por_quarter = most_profitable_by_quarter(df)
 
     # Cores
-    color_pink_foam = [
+    color_pink_foam_palette_divergent_6 = [
         "#54bebe",
+        "#90cfcf",
         "#c2e0df",
         "#f1f1f1",
-        "#ebb0bf",
-        "#dd6e90",
-        "#c80064",
+        "#ff9ea7",
+        "#ff2e63",
     ]
 
     # Ordenando o DataFrame por gross_income
     lucrativo_por_quarter = lucrativo_por_quarter.sort_values(by="gross_income")
 
     # Mapeando as cores para os produtos em ordem
-    color_mapping = dict(zip(lucrativo_por_quarter["product_line"], color_pink_foam))
+    color_mapping = dict(
+        zip(lucrativo_por_quarter["product_line"], color_pink_foam_palette_divergent_6)
+    )
 
     # Criando o gráfico de rosquinha
     fig = go.Figure(
@@ -441,7 +515,7 @@ elif option == "Produto Mais Lucrativo por Quarter":
     # Atualizando o layout do gráfico
     fig.update_layout(
         title_text="Produto Mais Lucrativo por Quarter",
-        title_font=dict(size=30),
+        title_font=dict(size=32),
         autosize=False,
         height=800,
         showlegend=True,
@@ -452,7 +526,7 @@ elif option == "Produto Mais Lucrativo por Quarter":
 
 
 elif option == "Período do Dia com Mais Vendas":
-    st.write(periodo_maior_vendas)
+    # st.write(periodo_maior_vendas)
     # Obtendo o número de vendas por período do dia
     sales_by_time_period = period_with_most_sales(df)
 
@@ -463,7 +537,7 @@ elif option == "Período do Dia com Mais Vendas":
         # "morning": "#a9d8d7", # pastel color
         "afternoon": "#f1f1f1",
         # "evening": "#e590a7", # pastel color
-        "evening": "#c80064",
+        "evening": "#ff2e63",
     }
 
     # Criando o gráfico de barras

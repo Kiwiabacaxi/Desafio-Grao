@@ -5,8 +5,61 @@ import pandas as pd
 
 
 def load_data():
-    df = pd.read_csv("./data/commerce_dataset_clean.csv", sep=";", decimal=".")
+    # df = pd.read_csv("./data/commerce_dataset_clean.csv", sep=";", decimal=".")
+    df = pd.read_csv("./data/commerce_dataset.csv", sep=";", decimal=".")
+    pre_processing(df)
     return df
+
+
+def pre_processing(df=pd.DataFrame()):
+    # Convertendo as colunas para o tipo de dados correto - datetime64[ns]
+    df["dtme"] = pd.to_datetime(df["dtme"])
+    df["month"] = df["dtme"].dt.month
+    df["quarter"] = df["dtme"].dt.quarter
+
+    return df
+
+
+# visao geral do dataset - head de 20
+def overview(df):
+    return df.head(20)
+
+
+# describe do dataset
+def describe(df):
+    return df.describe()
+
+
+# Verificando se há valores nulos
+def missing_values(df):
+    # Verificando se há valores nulos
+    missing_values = df.isnull().sum()
+
+    # Convertendo os resultados em um DataFrame
+    missing_values = missing_values.reset_index()
+    missing_values.columns = ["Nome da Coluna", "Valores Nulos"]
+
+    return missing_values
+
+
+# Verificando se há valores duplicados
+def duplicated_values(df):
+    # Verificando se há valores duplicados
+    duplicated_values = df.duplicated().sum()
+
+    return duplicated_values
+
+
+# tipos de dados
+def data_types(df):
+    # Obter os tipos de dados
+    data_types = pd.DataFrame(df.dtypes)
+
+    # Renomear as colunas do DataFrame resultante
+    data_types.reset_index(inplace=True)
+    data_types.columns = ["Nome da Coluna", "Tipo de Dado"]
+
+    return data_types
 
 
 # Calculando as métricas solicitadas
@@ -28,8 +81,6 @@ def average_unit_price(df):
 
 
 # 4 - Linha de produto mais vendido (em termos de quantidade)
-# def most_sold_product_line(df):
-#     return df.groupby("product_line")["quantity"].sum().idxmax()
 def most_sold_product_line(df):
     # Calcule a quantidade vendida por linha de produto
     quantity_per_product_line = (
@@ -50,8 +101,6 @@ def most_sold_product_line(df):
 
 
 # 5 - As 5 linhas de produtos mais bem avaliados (média de rating mais alta)
-# def top_5_rated_product_lines(df):
-#     return df.groupby("product_line")["rating"].mean().nlargest(5)
 def top_5_rated_product_lines(df):
     # Calcule a média de rating para cada linha de produto
     average_rating = df.groupby("product_line")["rating"].mean().reset_index()
@@ -66,8 +115,6 @@ def top_5_rated_product_lines(df):
 
 
 # 6 - Loja com o maior volume de vendas
-# def store_with_highest_sales(df):
-#     return df.groupby("branch")["total"].sum().idxmax()
 def store_with_highest_sales(df):
     # Calcule o volume de vendas por filial
     sales_per_branch = df.groupby("branch")["total"].sum().reset_index()
@@ -84,13 +131,6 @@ def store_with_highest_sales(df):
 
 
 # 7 - Preparando para calcular o método de pagamento mais popular por loja e mês
-# def popular_payment_method_by_store_month(df):
-#     return (
-#         df.groupby(["branch", "month", "payment_method"])["invoice_id"]
-#         .count()
-#         .unstack()
-#         .idxmax(axis=1)
-#     )
 def popular_payment_method_by_store_month(df):
     # Preparar os dados agrupando por loja, mês e método de pagamento e contando o número de ocorrências
     pagamento_por_loja_mes = (
@@ -114,42 +154,6 @@ def popular_payment_method_by_store_month(df):
 
 
 # 8 - As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente
-# def top_3_by_gender(df):
-#     return (
-#         df.groupby(["gender", "product_line"])["quantity"]
-#         .sum()
-#         .groupby(level=0, group_keys=False)
-#         .nlargest(3)
-#     )
-# def top_3_by_gender(df):
-#     # Agrupando os dados por gênero e linha de produto para somar as quantidades vendidas
-#     gender_product_sales = (
-#         df.groupby(["gender", "product_line"])["quantity"].sum().reset_index()
-#     )
-
-#     # Identificando as 3 linhas de produtos mais vendidas por gênero
-#     top_gender_product_sales = (
-#         gender_product_sales.groupby("gender")
-#         .apply(lambda x: x.nlargest(3, "quantity"))
-#         .reset_index(drop=True)
-#     )
-
-#     # Adicionando a coluna 'is_top_3'
-#     gender_product_sales["is_top_3"] = gender_product_sales.apply(
-#         lambda x: "Top 3"
-#         if (x["gender"], x["product_line"])
-#         in list(
-#             zip(
-#                 top_gender_product_sales["gender"],
-#                 top_gender_product_sales["product_line"],
-#             )
-#         )
-#         else "Outros",
-#         axis=1,
-#     )
-
-
-#     return gender_product_sales
 def top_3_by_gender(df):
     # Agrupando os dados por gênero e linha de produto para somar as quantidades vendidas
     gender_product_sales = (
@@ -181,13 +185,6 @@ def top_3_by_gender(df):
 
 
 # 9 - Produto mais lucrativo (maior receita gross_income) por filial (branch)
-# def most_profitable_by_branch(df):
-#     return (
-#         df.groupby(["branch", "product_line"])["gross_income"]
-#         .sum()
-#         .groupby(level=0, group_keys=False)
-#         .nlargest(1)
-#     )
 def most_profitable_by_branch(df):
     # Calculando o produto mais lucrativo por filial (branch) em termos de gross_income
     most_profitable_product_by_branch = (
@@ -203,13 +200,6 @@ def most_profitable_by_branch(df):
 
 
 # 10 - Produto mais lucrativo (maior receita gross_income) por quarter
-# def most_profitable_by_quarter(df):
-#     return (
-#         df.groupby(["quarter", "product_line"])["gross_income"]
-#         .sum()
-#         .groupby(level=0, group_keys=False)
-#         .nlargest(1)
-#     )
 def most_profitable_by_quarter(df):
     # Calculando a receita bruta por produto e quarter
     gross_income_by_quarter_product = (
@@ -238,8 +228,6 @@ def most_profitable_by_quarter(df):
 
 
 # 11 - Período do dia em que ocorre o maior número de vendas
-# def period_with_most_sales(df):
-#     return df["time_of_day"].value_counts().idxmax()
 def period_with_most_sales(df):
     # Calculando o número de vendas por período do dia
     sales_by_time_of_day = df["time_of_day"].value_counts().reset_index()

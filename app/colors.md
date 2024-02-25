@@ -119,6 +119,27 @@
         "#c80064",
     ]
 
+    ##############################
+    # Background Color Palette
+    background = [
+        "#0E1117", # main background
+        "#262730", # secondary background
+
+    ]
+
+    # main background HUE
+    background_hue = [
+        "#0e1117",
+        "#23272f",
+        "#393e48",
+        "#505764",
+        "#687181",
+        "#818c9f",
+        "#9ba8be",
+        "#b6c5de",
+        "#d1e3ff",
+    ]
+
     # Deemphasized Color Palette v1
     color_deemphasized_v1 = [
         "#F0CBC5",
@@ -131,24 +152,84 @@
         "#F93D5E",  # Cor Forte v2 - crimson
     ]
 
-    # pallete gen - crimson
-    color_pallete_6 = [
-        "#f93d5e",
-        "#fa636e",
-        "#fa8080",
-        "#f99b94",
-        "#f6b3ac",
-        "#f0cbc5",
+    color_deemphasized = [
+        "#F0CBC5",
+        "#FF2E63",  # Cor Forte v3 - crimson_v3
     ]
 
-    gen_color_pallete_6 = [
-        "#F93D5E",
-        "#3CBCF0",
-        "#F0673C",
-        "#3CF0C2",
-        "#9B6A5A",
-        "#705459",
+    # pink phoan palette original 8
+    color_pink_foam_palette = [
+        "#ff2e63",
+        "#f446a2",
+        "#d06bd5",
+        "#978af4",
+        "#4ea0fb",
+        "#00afee",
+        "#00b9d7",
+        "#54bebe",
     ]
+
+    # pink phoan palette divergent pastel 13
+    color_pink_foam_palette_divergent_pastel = [
+        "#54bebe",
+        "#6dc0bf",
+        "#82c1c1",
+        "#95c3c2",
+        "#a6c4c4",
+        "#b7c5c5",
+        "#c6c6c6",
+        "#d6b3b5",
+        "#e29fa4",
+        "#ec8a93",
+        "#f47282",
+        "#fa5672",
+        "#ff2e63",
+    ]
+
+    # pink phoan palette divergent 13
+    color_pink_foam_palette_divergent = [
+        "#54bebe",
+        "#74c7c6",
+        "#90cfcf",
+        "#a9d8d7",
+        "#c2e0df",
+        "#d9e8e8",
+        "#f1f1f1",
+        "#fad6d7",
+        "#ffbabf",
+        "#ff9ea7",
+        "#ff808f",
+        "#ff5e79",
+        "#ff2e63",
+    ]
+
+    # redux pink phoan palette divergent 5
+    color_pink_foam_palette_divergent_5 = [
+        "#54bebe",
+        "#a9d8d7",
+        "#f1f1f1",
+        "#ff9ea7",
+        "#ff2e63",
+    ]
+
+    # redux pink phoan palette divergent 6
+    color_pink_foam_palette_divergent_6 = [
+        "#54bebe",
+        "#90cfcf",
+        "#c2e0df",
+        "#f1f1f1",
+        "#ff9ea7",
+        "#ff2e63",
+    ]
+
+    # redux pink phoan palette divergent 3
+    color_pink_foam_palette_divergent_3 = [
+        "#54bebe",
+        "#f1f1f1",
+        "#ff2e63",
+    ]
+
+
 
     
 
