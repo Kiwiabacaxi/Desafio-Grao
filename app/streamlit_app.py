@@ -11,6 +11,7 @@ from logic.calc import (
     top_5_rated_product_lines,
     store_with_highest_sales,
     popular_payment_method_by_store_month,
+
     top_3_by_gender,
     most_profitable_by_branch,
     most_profitable_by_quarter,
@@ -24,12 +25,15 @@ df = load_data()
 total_vendas = total_sales(df)
 total_produtos_vendidos = total_products_sold(df)
 media_preco_unitario = average_unit_price(df)
+
 linha_mais_vendida = most_sold_product_line(df)
 top_5_avaliados = top_5_rated_product_lines(df)
 loja_maior_vendas = store_with_highest_sales(df)
+
 pagamento_popular_por_loja_mes = popular_payment_method_by_store_month(df)
 top_3_por_genero = top_3_by_gender(df)
 lucrativo_por_filial = most_profitable_by_branch(df)
+
 lucrativo_por_quarter = most_profitable_by_quarter(df)
 periodo_maior_vendas = period_with_most_sales(df)
 
@@ -89,6 +93,7 @@ elif option == "Média de Preço Unitário":
         "#414487",
         "#440154",
     ]
+
     # Criando um gráfico de barras personalizado com Plotly
     fig = px.bar(
         media_preco_unitario,
@@ -96,8 +101,8 @@ elif option == "Média de Preço Unitário":
         y="unit_price",
         # y=media_preco_unitario.values,
         color=media_preco_unitario.index,
-        color_discrete_sequence=colors_spring_pastels,
-        # color_discrete_sequence=colors_viridis_6,
+        # color_discrete_sequence=colors_spring_pastels,
+        color_discrete_sequence=colors_viridis_6,
         labels={"UnitPrice": "Média de Preço Unitário", "Product": "Linha de Produto"},
     )
 
@@ -186,10 +191,65 @@ elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
     st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Loja com Maior Volume de Vendas":
-    st.write(loja_maior_vendas)
+    # st.write(type(loja_maior_vendas))
+    # Definindo as cores
+    color_deemphasized = [
+        "#F0CBC5",
+        "#EA5543",  # Cor Forte
+    ]
+
+    # Criando um gráfico de barras com Plotly
+    fig = px.bar(
+        loja_maior_vendas,
+        x="branch",
+        y="total",
+        color="is_top",
+        labels={"branch": "Loja", "total": "Volume de Vendas"},
+        color_discrete_map={False: color_deemphasized[0], True: color_deemphasized[1]},
+    )
+
+    # Personalizando o layout do gráfico
+    fig.update_layout(
+        xaxis_title="Loja",
+        yaxis_title="Volume de Vendas",
+        title="Loja com Maior Volume de Vendas",
+        title_font=dict(size=32),
+        xaxis_tickangle=-45,
+        autosize=False,
+        height=800,
+        yaxis=dict(
+            range=[100_000, 112_000]  # 106_000 altera bastante a percepção
+        ),  # Definindo o limite inferior do eixo y
+        showlegend=False,  # Escondendo a legenda
+    )
+
+    # Exibindo o gráfico
+    st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Método de Pagamento Mais Popular por Loja e Mês":
-    st.write(pagamento_popular_por_loja_mes)
+    st.write((pagamento_popular_por_loja_mes))
+    # popular_payment_method = pagamento_popular_por_loja_mes
+
+    # # Criando um gráfico de barras empilhadas com Plotly
+    # fig = px.bar(
+    #     popular_payment_method.reset_index(),
+    #     x="branch",
+    #     y=popular_payment_method.columns.tolist(),
+    #     labels={"value": "Proporção", "branch": "Loja", "variable": "Método de Pagamento"},
+    #     title="Método de Pagamento Mais Popular por Loja e Mês",
+    #     height=800,
+    # )
+
+    # # Personalizando o layout do gráfico
+    # fig.update_layout(
+    #     barmode="stack",
+    #     xaxis={"categoryorder": "total descending"},
+    #     yaxis_title="Proporção",
+    # )
+
+    # # Exibindo o gráfico
+    # st.plotly_chart(fig, use_container_width=True)
+
 
 elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
     st.write(top_3_por_genero)

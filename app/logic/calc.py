@@ -1,6 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import calendar
 
 
 def load_data():
@@ -65,11 +66,24 @@ def top_5_rated_product_lines(df):
 
 
 # 6 - Loja com o maior volume de vendas
+# def store_with_highest_sales(df):
+#     return df.groupby("branch")["total"].sum().idxmax()
 def store_with_highest_sales(df):
-    return df.groupby("branch")["total"].sum().idxmax()
+    # Calcule o volume de vendas por filial
+    sales_per_branch = df.groupby("branch")["total"].sum().reset_index()
+
+    # Encontre a filial com o maior volume de vendas
+    top_sales_branch = sales_per_branch.loc[
+        sales_per_branch["total"].idxmax(), "branch"
+    ]
+
+    # Crie uma nova coluna que é True para a filial com o maior volume de vendas e False para as outras
+    sales_per_branch["is_top"] = sales_per_branch["branch"] == top_sales_branch
+
+    return sales_per_branch
 
 
-# Preparando para calcular o método de pagamento mais popular por loja e mês
+# 7 - Preparando para calcular o método de pagamento mais popular por loja e mês
 def popular_payment_method_by_store_month(df):
     return (
         df.groupby(["branch", "month", "payment_method"])["invoice_id"]
@@ -79,7 +93,7 @@ def popular_payment_method_by_store_month(df):
     )
 
 
-# As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente
+# 8 - As 3 linhas de produtos com mais quantidades vendidas por gênero do cliente
 def top_3_by_gender(df):
     return (
         df.groupby(["gender", "product_line"])["quantity"]
@@ -89,7 +103,7 @@ def top_3_by_gender(df):
     )
 
 
-# Produto mais lucrativo (maior receita gross_income) por filial (branch)
+# 9 - Produto mais lucrativo (maior receita gross_income) por filial (branch)
 def most_profitable_by_branch(df):
     return (
         df.groupby(["branch", "product_line"])["gross_income"]
@@ -99,7 +113,7 @@ def most_profitable_by_branch(df):
     )
 
 
-# Produto mais lucrativo (maior receita gross_income) por quarter
+# 10 - Produto mais lucrativo (maior receita gross_income) por quarter
 def most_profitable_by_quarter(df):
     return (
         df.groupby(["quarter", "product_line"])["gross_income"]
@@ -109,6 +123,6 @@ def most_profitable_by_quarter(df):
     )
 
 
-# Período do dia em que ocorre o maior número de vendas
+# 11 - Período do dia em que ocorre o maior número de vendas
 def period_with_most_sales(df):
     return df["time_of_day"].value_counts().idxmax()
