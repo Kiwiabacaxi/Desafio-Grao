@@ -188,8 +188,6 @@ def top_3_by_gender(df):
 #         .groupby(level=0, group_keys=False)
 #         .nlargest(1)
 #     )
-
-
 def most_profitable_by_branch(df):
     # Calculando o produto mais lucrativo por filial (branch) em termos de gross_income
     most_profitable_product_by_branch = (
@@ -205,15 +203,53 @@ def most_profitable_by_branch(df):
 
 
 # 10 - Produto mais lucrativo (maior receita gross_income) por quarter
+# def most_profitable_by_quarter(df):
+#     return (
+#         df.groupby(["quarter", "product_line"])["gross_income"]
+#         .sum()
+#         .groupby(level=0, group_keys=False)
+#         .nlargest(1)
+#     )
 def most_profitable_by_quarter(df):
-    return (
-        df.groupby(["quarter", "product_line"])["gross_income"]
-        .sum()
-        .groupby(level=0, group_keys=False)
-        .nlargest(1)
+    # Calculando a receita bruta por produto e quarter
+    gross_income_by_quarter_product = (
+        df.groupby(["quarter", "product_line"])["gross_income"].sum().reset_index()
     )
+
+    # Identificando o produto mais lucrativo por quarter para destacá-lo
+    most_profitable_each_quarter = gross_income_by_quarter_product.loc[
+        gross_income_by_quarter_product.groupby("quarter")["gross_income"].idxmax()
+    ]
+
+    # Definindo uma nova coluna para marcar o produto mais lucrativo em cada quarter
+    gross_income_by_quarter_product[
+        "most_profitable"
+    ] = gross_income_by_quarter_product.apply(
+        lambda x: (
+            "Most Profitable"
+            if (x["quarter"], x["product_line"])
+            in most_profitable_each_quarter[["quarter", "product_line"]].values
+            else "Other"
+        ),
+        axis=1,
+    )
+
+    return gross_income_by_quarter_product
 
 
 # 11 - Período do dia em que ocorre o maior número de vendas
+# def period_with_most_sales(df):
+#     return df["time_of_day"].value_counts().idxmax()
 def period_with_most_sales(df):
-    return df["time_of_day"].value_counts().idxmax()
+    # Calculando o número de vendas por período do dia
+    sales_by_time_of_day = df["time_of_day"].value_counts().reset_index()
+    sales_by_time_of_day.columns = ["time_of_day", "sales_count"]
+
+    # Convertendo 'time_of_day' para uma categoria e definindo a ordem
+    sales_by_time_of_day["time_of_day"] = pd.Categorical(
+        sales_by_time_of_day["time_of_day"],
+        categories=["morning", "afternoon", "evening"],
+        ordered=True,
+    )
+
+    return sales_by_time_of_day.sort_values("time_of_day")

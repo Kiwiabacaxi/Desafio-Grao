@@ -182,7 +182,7 @@ elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
         title="Top 5 Linhas de Produtos Mais Bem Avaliados",
         title_font=dict(size=32),
         xaxis_tickangle=-45,
-        autosize=False,
+        autosize=True,
         height=800,
         yaxis=dict(range=[6, 7.4]),  # Definindo o limite inferior do eixo y
         showlegend=False,  # Escondendo a legenda
@@ -345,7 +345,7 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
         xaxis_tickangle=-45,
         autosize=False,
         height=800,
-        showlegend=True,
+        showlegend=False,
     )
 
     # Exibir o gráfico no Streamlit
@@ -399,6 +399,58 @@ elif option == "Produto Mais Lucrativo por Filial":
 
 elif option == "Produto Mais Lucrativo por Quarter":
     st.write(lucrativo_por_quarter)
+    # Obtendo os dados mais lucrativos por quarter
+    lucrativo_por_quarter = most_profitable_by_quarter(df)
+
+    # Cores
+    color_pink_foam = [
+        "#54bebe",
+        "#c2e0df",
+        "#f1f1f1",
+        "#ebb0bf",
+        "#dd6e90",
+        "#c80064",
+    ]
+
+    # Ordenando o DataFrame por gross_income
+    lucrativo_por_quarter = lucrativo_por_quarter.sort_values(by="gross_income")
+
+    # Mapeando as cores para os produtos em ordem
+    color_mapping = dict(zip(lucrativo_por_quarter["product_line"], color_pink_foam))
+
+    # Criando o gráfico de rosquinha
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=lucrativo_por_quarter["product_line"],
+                values=lucrativo_por_quarter["gross_income"],
+                hole=0.45,
+                pull=[
+                    0.2 if i == "Most Profitable" else 0
+                    for i in lucrativo_por_quarter["most_profitable"]
+                ],
+                marker=dict(
+                    colors=[
+                        color_mapping[product]
+                        for product in lucrativo_por_quarter["product_line"]
+                    ]
+                ),  # Use a paleta de cores personalizada
+            )
+        ]
+    )  # hole parameter creates the donut shape
+
+    # Atualizando o layout do gráfico
+    fig.update_layout(
+        title_text="Produto Mais Lucrativo por Quarter",
+        title_font=dict(size=30),
+        autosize=False,
+        height=800,
+        showlegend=True,
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
 
 elif option == "Período do Dia com Mais Vendas":
     st.write(periodo_maior_vendas)

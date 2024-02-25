@@ -92,6 +92,33 @@
         "#c80064",
     ]
 
+    color_pink_foam_7 = [
+        "#54bebe",
+        "#90cfcf",
+        "#c2e0df",
+        "#f1f1f1",
+        "#ebb0bf",
+        "#dd6e90",
+        "#c80064",
+    ]
+
+    # Diverging Color Palette
+    color_pink_foam_13 = [
+        "#54bebe",
+        "#74c7c6",
+        "#90cfcf",
+        "#a9d8d7",
+        "#c2e0df",
+        "#d9e8e8",
+        "#f1f1f1",
+        "#efd1d8",
+        "#ebb0bf",
+        "#e590a7",
+        "#dd6e90",
+        "#d3487a",
+        "#c80064",
+    ]
+
     # Deemphasized Color Palette v1
     color_deemphasized_v1 = [
         "#F0CBC5",
