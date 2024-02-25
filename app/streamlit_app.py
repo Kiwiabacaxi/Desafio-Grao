@@ -129,7 +129,7 @@ elif option == "Linha de Produto Mais Vendida":
     # color low hue RED
     color_deemphasized = [
         "#F0CBC5",
-        "#EA5543",  # Cor Forte
+        "#F93D5E",  # Cor Forte
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -162,7 +162,7 @@ elif option == "Top 5 Linhas de Produtos Mais Bem Avaliados":
     # Definindo as cores
     color_deemphasized = [
         "#F0CBC5",
-        "#EA5543",  # Cor Forte
+        "#F93D5E",  # Cor Forte
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -196,7 +196,7 @@ elif option == "Loja com Maior Volume de Vendas":
     # Definindo as cores
     color_deemphasized = [
         "#F0CBC5",
-        "#EA5543",  # Cor Forte
+        "#F93D5E",  # Cor Forte v2 - crimson
     ]
 
     # Criando um gráfico de barras com Plotly
@@ -301,19 +301,19 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
 
     # Definindo as cores padrão para todas as barras
     male_colors = [
-        "lightslategray",
+        "#F0CBC5",
     ] * len(male_data)
     female_colors = [
-        "lightslategray",
+        "#F0CBC5",
     ] * len(female_data)
 
-    # Alterando a cor das barras para 'crimson' se 'is_top_3' for True
+    # Alterando a cor das barras para '#F93D5E' se 'is_top_3' for True
     male_colors = [
-        "crimson" if is_top_3 else color
+        "#F93D5E" if is_top_3 else color
         for color, is_top_3 in zip(male_colors, male_data["is_top_3"])
     ]
     female_colors = [
-        "crimson" if is_top_3 else color
+        "#F93D5E" if is_top_3 else color
         for color, is_top_3 in zip(female_colors, female_data["is_top_3"])
     ]
 
@@ -345,7 +345,7 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
         xaxis_tickangle=-45,
         autosize=False,
         height=800,
-        showlegend=True, # as vezes fica melhor sem a legenda, testar
+        showlegend=True,
     )
 
     # Exibir o gráfico no Streamlit
@@ -353,6 +353,49 @@ elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
 
 elif option == "Produto Mais Lucrativo por Filial":
     st.write(lucrativo_por_filial)
+    # Definindo a escala de cores
+    colors = [  # -> ou trocar por viridis ??????
+        "#54BEBE",
+        "#dedad2",
+        "#c80064",
+    ]
+    # Obtendo os dados mais lucrativos por filial
+    lucrativo_por_filial = most_profitable_by_branch(df)
+
+    # Convertendo o índice multi-nível em colunas
+    lucrativo_por_filial = lucrativo_por_filial.reset_index()
+
+    # Criando o gráfico de barras
+    fig = go.Figure()
+
+    # Criando uma série de dados para cada filial
+    for branch, color in zip(lucrativo_por_filial["branch"].unique(), colors):
+        branch_data = lucrativo_por_filial[lucrativo_por_filial["branch"] == branch]
+        fig.add_trace(
+            go.Bar(
+                name=branch,
+                x=branch_data["product_line"],
+                y=branch_data["gross_income"],
+                marker_color=color,
+            )
+        )
+
+    # Atualizando o layout do gráfico
+    fig.update_layout(
+        title_text="Produto Mais Lucrativo por Filial",
+        xaxis_title="Filial",
+        yaxis_title="Lucro",
+        title_font=dict(size=30),
+        xaxis_tickangle=-45,
+        autosize=False,
+        yaxis=dict(range=[800, 1200]),  # Definindo o limite inferior do eixo y
+        height=800,
+        showlegend=True,
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
 
 elif option == "Produto Mais Lucrativo por Quarter":
     st.write(lucrativo_por_quarter)

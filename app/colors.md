@@ -92,4 +92,27 @@
         "#c80064",
     ]
 
+    # Deemphasized Color Palette v1
+    color_deemphasized_v1 = [
+        "#F0CBC5",
+        "#EA5543",  # Cor Forte - pastel red
+    ]
+
+    # Deemphasized Color Palette v2
+    color_deemphasized = [
+        "#F0CBC5",
+        "#F93D5E",  # Cor Forte v2 - crimson
+    ]
+
+    # pallete gen - crimson
+    color_pallete_6 = [
+        "#f93d5e0",
+        "#fa636e",
+        "#fa8080",
+        "#f99b94",
+        "#f6b3ac",
+        "#f0cbc5",
+    ]
+    
+
     ````

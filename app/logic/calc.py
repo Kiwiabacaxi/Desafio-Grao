@@ -181,13 +181,27 @@ def top_3_by_gender(df):
 
 
 # 9 - Produto mais lucrativo (maior receita gross_income) por filial (branch)
+# def most_profitable_by_branch(df):
+#     return (
+#         df.groupby(["branch", "product_line"])["gross_income"]
+#         .sum()
+#         .groupby(level=0, group_keys=False)
+#         .nlargest(1)
+#     )
+
+
 def most_profitable_by_branch(df):
-    return (
-        df.groupby(["branch", "product_line"])["gross_income"]
-        .sum()
-        .groupby(level=0, group_keys=False)
-        .nlargest(1)
+    # Calculando o produto mais lucrativo por filial (branch) em termos de gross_income
+    most_profitable_product_by_branch = (
+        df.groupby(["branch", "product_line"])["gross_income"].sum().reset_index()
     )
+
+    # Identificando o produto mais lucrativo por filial
+    most_profitable_product_by_branch = most_profitable_product_by_branch.sort_values(
+        ["branch", "gross_income"], ascending=[True, False]
+    ).drop_duplicates(["branch"])
+
+    return most_profitable_product_by_branch
 
 
 # 10 - Produto mais lucrativo (maior receita gross_income) por quarter
