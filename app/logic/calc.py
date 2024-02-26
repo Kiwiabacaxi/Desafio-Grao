@@ -241,3 +241,13 @@ def period_with_most_sales(df):
     )
 
     return sales_by_time_of_day.sort_values("time_of_day")
+
+
+# 12 - Vendas por quarter, por região e por categoria de produtos -> Treemap
+def sales_by_quarter_city_category(df):
+    # Calculando o volume de vendas por quarter, por região ("city") e por categoria de produtos ("product_line")
+    sales_by_quarter_region_category = (
+        df.groupby(["quarter", "city", "product_line"])["total"].sum().reset_index()
+    )
+
+    return sales_by_quarter_region_category

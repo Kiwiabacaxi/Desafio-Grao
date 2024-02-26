@@ -2,6 +2,8 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from PIL import Image
+import matplotlib.pyplot as plt
+
 
 from streamlit_option_menu import option_menu
 
@@ -25,6 +27,7 @@ from logic.calc import (
     most_profitable_by_branch,
     most_profitable_by_quarter,
     period_with_most_sales,
+    sales_by_quarter_city_category,
 )
 
 # Carregar o dataset
@@ -52,6 +55,7 @@ lucrativo_por_filial = most_profitable_by_branch(df)
 
 lucrativo_por_quarter = most_profitable_by_quarter(df)
 periodo_maior_vendas = period_with_most_sales(df)
+vendas_por_quarter_cidade_categoria = sales_by_quarter_city_category(df)
 
 #############################################################
 
@@ -77,6 +81,7 @@ options = [
     "Produto Mais Lucrativo por Filial",
     "Produto Mais Lucrativo por Quarter",
     "Período do Dia com Mais Vendas",
+    "Análise de Vendas por Trimestre, Região e Categoria",
 ]
 
 with st.sidebar:
@@ -328,11 +333,6 @@ elif option == "Método de Pagamento Mais Popular por Loja e Mês":
             "value": "Proporção (%)",
             "payment_method": "Método de Pagamento",
         },
-        # color_discrete_map={
-        #     "Ewallet": "#54BEBE",
-        #     "Credit card": "#dedad2",
-        #     "Cash": "#c80064",
-        # },
         color_discrete_map={
             "Ewallet": "#54bebe",
             "Credit card": "#f1f1f1",
@@ -562,6 +562,48 @@ elif option == "Período do Dia com Mais Vendas":
         autosize=False,
         height=800,
         showlegend=False,
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+# quarter && city && product_line
+elif option == "Análise de Vendas por Trimestre, Região e Categoria":
+    # Cores padrão do projeto
+    color_pink_foam_palette_divergent = [
+        "#54bebe",
+        "#f1f1f1",
+        "#ff2e63",
+    ]
+
+    # Invertendo a lista de cores
+    color_pink_foam_palette_divergent_r = color_pink_foam_palette_divergent[::-1]
+
+    # Criação do gráfico de treemap
+    fig = px.treemap(
+        vendas_por_quarter_cidade_categoria,
+        path=["quarter", "city", "product_line"],
+        values="total",
+        color="total",
+        color_continuous_scale=color_pink_foam_palette_divergent,
+        # color_discrete_sequence=color_pink_foam_palette_divergent,
+    )
+
+    # Atualizando o layout do gráfico
+    fig.update_traces(
+        root_color="lightgrey",  # Adicionando cor de fundo
+        marker=dict(cornerradius=5),  # Adicionando bordas arredondadas
+        # hoverinfo="label",  # Adicionando informações ao passar o mouse
+    )
+
+    fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
+
+    # Atualizando o layout do gráfico
+    fig.update_layout(
+        title_text="Tree Map - Análise de Vendas por Trimestre, Cidade e Categoria",
+        title_font=dict(size=32),
+        autosize=False,
+        height=800,
     )
 
     # Exibir o gráfico no Streamlit
