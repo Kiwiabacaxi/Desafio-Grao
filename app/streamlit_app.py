@@ -2,13 +2,10 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from PIL import Image
-import matplotlib.pyplot as plt
 
 
 from streamlit_option_menu import option_menu
 
-# import seaborn as sns
-# import matplotlib.pyplot as plt
 from logic.calc import (
     load_data,
     overview,
@@ -134,7 +131,6 @@ if option == "Visão Geral do Dataset":
     st.subheader("Valores Duplicados")
     st.write(f"Total de Valores Duplicados: {valores_duplicados}")
 
-
 elif option == "Total de Vendas no Período":
     st.markdown(
         f"""
@@ -193,7 +189,6 @@ elif option == "Média de Preço Unitário":
 
     # Exibindo o gráfico
     st.plotly_chart(fig, use_container_width=True)
-
 
 elif option == "Linha de Produto Mais Vendida":
     # st.write(linha_mais_vendida)
@@ -298,7 +293,6 @@ elif option == "Loja com Maior Volume de Vendas":
     # Exibindo o gráfico
     st.plotly_chart(fig, use_container_width=True)
 
-
 elif option == "Método de Pagamento Mais Popular por Loja e Mês":
     # st.write(pagamento_popular_por_loja_mes)
     # Preparar os dados
@@ -362,7 +356,6 @@ elif option == "Método de Pagamento Mais Popular por Loja e Mês":
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
-
 
 elif option == "Top 3 Linhas de Produtos Mais Vendidos por Gênero":
     # st.write(top_3_por_genero)
@@ -468,7 +461,6 @@ elif option == "Produto Mais Lucrativo por Filial":
     # Exibir o gráfico no Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-
 elif option == "Produto Mais Lucrativo por Quarter":
     # st.write(lucrativo_por_quarter)
     # Obtendo os dados mais lucrativos por quarter
@@ -525,7 +517,6 @@ elif option == "Produto Mais Lucrativo por Quarter":
     # Exibir o gráfico no Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-
 elif option == "Período do Dia com Mais Vendas":
     # st.write(periodo_maior_vendas)
     # Obtendo o número de vendas por período do dia
@@ -567,7 +558,6 @@ elif option == "Período do Dia com Mais Vendas":
     # Exibir o gráfico no Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-# quarter && city && product_line
 elif option == "Análise de Vendas por Trimestre, Região e Categoria":
     # Cores padrão do projeto
     color_pink_foam_palette_divergent = [
