@@ -64,16 +64,21 @@ def data_types(df):
 
 # 1 - Total de vendas no período
 def total_sales(df):
+    # Retorna a soma da coluna "total"
+    # total: O valor total da transação (incluindo o preço do produto e o imposto).
     return df["total"].sum()
 
 
 # 2 - Número total de produtos vendidos
 def total_products_sold(df):
+    # Retorna a soma da coluna "quantity"
+    # quantity: A quantidade de produtos vendidos nesta transação.
     return df["quantity"].sum()
 
 
 # 3 - Média de preço unitário de linha de produtos
 def average_unit_price(df):
+    # Retorna a média da coluna "unit_price" agrupada por "product_line"
     return df.groupby("product_line")["unit_price"].mean()
 
 
@@ -84,7 +89,7 @@ def most_sold_product_line(df):
         df.groupby("product_line")["quantity"].sum().reset_index()
     )
 
-    # Encontre a linha de produto mais vendida
+    # Encontre a linha de produto mais vendida -> idxmax() retorna o índice da primeira ocorrência do valor máximo
     most_sold_product = quantity_per_product_line.loc[
         quantity_per_product_line["quantity"].idxmax(), "product_line"
     ]
@@ -94,6 +99,7 @@ def most_sold_product_line(df):
         quantity_per_product_line["product_line"] == most_sold_product
     )
 
+    # Retorna a quantidade vendida por linha de produto
     return quantity_per_product_line
 
 
