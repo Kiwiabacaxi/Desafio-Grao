@@ -27,6 +27,8 @@ from logic.calc import (
     sales_by_quarter_city_category,
 )
 
+from logic.pred_calc import load_data_pred, prepare_data, train_sarima, make_forecast
+
 # Carregar o dataset
 df = load_data()
 
@@ -54,6 +56,13 @@ lucrativo_por_quarter = most_profitable_by_quarter(df)
 periodo_maior_vendas = period_with_most_sales(df)
 vendas_por_quarter_cidade_categoria = sales_by_quarter_city_category(df)
 
+
+# Carregar os dados para previsão - SARIMA
+df_pred = load_data_pred()
+train_data, test_data = prepare_data(df_pred)
+model_sarima_fit = train_sarima(train_data, p=1, d=1, q=1, P=1, D=1, Q=1, m=7)
+forecast_mean, forecast_ci = make_forecast(model_sarima_fit, test_data)
+
 #############################################################
 
 # Dashboard
@@ -79,6 +88,7 @@ options = [
     "Produto Mais Lucrativo por Quarter",
     "Período do Dia com Mais Vendas",
     "Análise de Vendas por Trimestre, Região e Categoria",
+    "Modelo de Previsão de Vendas - SARIMA",
 ]
 
 with st.sidebar:
@@ -594,6 +604,86 @@ elif option == "Análise de Vendas por Trimestre, Região e Categoria":
         title_font=dict(size=32),
         autosize=False,
         height=800,
+    )
+
+    # Exibir o gráfico no Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+elif option == "Modelo de Previsão de Vendas - SARIMA":
+    # Cores padrão do projeto
+    color_pink_foam_palette_divergent = [
+        "#54bebe",
+        "#f1f1f1",
+        "#ff2e63",
+    ]
+
+    # Cria um objeto de figura
+    fig = go.Figure()
+
+    # Adiciona os dados de treinamento ao gráfico
+    fig.add_trace(
+        go.Scatter(
+            x=train_data.index,
+            y=train_data,
+            mode="lines",
+            name="Dados de Treinamento",
+            line=dict(color=color_pink_foam_palette_divergent[0]),
+        )
+    )
+
+    # Adiciona os dados de teste ao gráfico
+    fig.add_trace(
+        go.Scatter(
+            x=test_data.index,
+            y=test_data,
+            mode="lines",
+            name="Dados de Teste",
+            line=dict(color=color_pink_foam_palette_divergent[1]),
+        )
+    )
+
+    # Adiciona as previsões ao gráfico
+    fig.add_trace(
+        go.Scatter(
+            x=forecast_mean.index,
+            y=forecast_mean,
+            mode="lines",
+            name="Previsões",
+            line=dict(color=color_pink_foam_palette_divergent[2]),
+        )
+    )
+
+    # Adiciona o intervalo de confiança ao gráfico
+    fig.add_trace(
+        go.Scatter(
+            x=forecast_ci.index,
+            y=forecast_ci.iloc[:, 0],
+            mode="lines",
+            line=dict(width=0),
+            showlegend=False,
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=forecast_ci.index,
+            y=forecast_ci.iloc[:, 1],
+            mode="lines",
+            fill="tonexty",
+            line=dict(width=0),
+            # fillcolor="rgba(255, 0, 0, 0.3)",
+            fillcolor="rgba(255, 46, 99, 0.3)",
+            showlegend=False,
+        )
+    )
+
+    # Adiciona títulos e rótulos
+    fig.update_layout(
+        title="Previsão de Vendas Futuras com Modelo SARIMA",
+        xaxis_title="Data",
+        yaxis_title="Total de Vendas",
+        height=800,
+        # plot_bgcolor="rgba(0,0,0,0)",
+        # paper_bgcolor="rgba(0,0,0,0)",
     )
 
     # Exibir o gráfico no Streamlit
