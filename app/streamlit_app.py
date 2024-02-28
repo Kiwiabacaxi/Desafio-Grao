@@ -26,6 +26,7 @@ from logic.calc import (
     most_profitable_by_quarter,
     period_with_most_sales,
     sales_by_quarter_city_category,
+    net_profit,
 )
 
 from logic.pred_calc import (
@@ -135,6 +136,76 @@ if option == "Visão Geral do Dataset":
     # Exibindo informações adicionais
     st.subheader("Informações Adicionais")
     st.table(descrever)
+
+    # Bullet point com uma visao geral dos dados
+    # Calcular o lucro líquido
+    net_profit_value = net_profit(df)
+
+    # Calcular o lucro líquido
+    net_profit_value = net_profit(df)
+
+    # Visão Geral do Dataset
+    st.markdown(
+        """
+    ## Visão Geral do Dataset
+
+    - **Quantidade de Dados:** O dataset contém 1000 registros e 22 colunas (com a adição de `month` e `quarter`).
+        """
+    )
+
+    # Distribuição de Preços e Quantidades
+    st.markdown(
+        """
+    ## Distribuição de Preços e Quantidades
+
+    - **Preço Unitário (`unit_price`):** Varia de R\$10,08 a uma média de R\$55,67, mostrando uma ampla gama de valores de itens.
+    - **Quantidade (`quantity`):** A média de itens por compra é de 5,51, com um mínimo de 1 item, indicando variação no volume de compra.
+        """
+    )
+
+    # Análise Temporal
+    st.markdown(
+        """
+    ## Análise Temporal
+
+    - **Período de Dados:** Os dados abrangem de 1 de Janeiro de 2019 a 30 de Março de 2019. Dando uma visão de 3 meses.
+    - **Padrões Sazonais:** Como não temos um ano completo de dados, não é muito visivel os padrões sazonais, mas podemos tentar observar sazonais semanais.
+        """
+    )
+
+    # Avaliações
+    st.markdown(
+        """
+    ## Avaliações
+
+    - **Satisfação do Cliente:** As avaliações variam de 4 a uma média quase 7, indicando uma recepção positiva dos produtos ou serviços. Com um desvio padrão de 1.7186 indicando uma variação considerável.
+        """
+    )
+
+    # Margem e Renda Bruta
+    st.markdown(
+        """
+    ## Margem e Renda Bruta
+
+    - **Margem Bruta Percentual (`gross_margin_pct`):** Fixada em 4.7619%, refletindo uma política de preço uniforme.
+    - **Renda Bruta (`gross_income`):** Com valor médio próximo ao VAT(imposto sobre valor agregado), indicando uma estrutura de custos equilibrada.
+        """
+    )
+
+    # Lucro Líquido
+    st.markdown(
+        f"## Lucro Líquido\n\n- **Lucro Líquido:** O lucro líquido é de R${net_profit_value:.2f}, indicando uma operação saudável."
+    )
+
+    # Insights Adicionais
+    st.markdown(
+        """
+    ## Insights Adicionais
+
+    - **Valor Agregado (VAT) e Total (`total`):** Com médias de aproximadamente R\$15,38 e R\$322,97 respectivamente, esses valores sublinham a variação no valor dos impostos e o alcance das compras.
+    - **Custo das Mercadorias Vendidas (`COGS`):** Média de R$307,59, oferecendo insights sobre a estrutura de custos.
+        """
+    )
 
     # Exibindo os tipos de dados
     tipos_dados.columns = ["Nome da Coluna", "Tipo de Dado"]

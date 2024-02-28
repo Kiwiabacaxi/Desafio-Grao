@@ -254,3 +254,10 @@ def sales_by_quarter_city_category(df):
     )
 
     return sales_by_quarter_region_category
+
+# extra - # Calcular o lucro líquido
+def net_profit(df):
+    # Calculando o lucro líquido
+    net_profit = df["total"].sum() - df["cogs"].sum()
+
+    return net_profit
