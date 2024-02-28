@@ -46,13 +46,13 @@ def find_best_sarima_params(train_data):
     warnings.filterwarnings("ignore")
 
     # Define the range of values for p, d, q, P, D, Q, and m
-    p_values = range(0, 5)  # Autoregressive order
-    d_values = [1]          # Differencing order
-    q_values = range(0, 5)  # Moving average order
-    P_values = range(0, 5)  # Seasonal autoregressive order
-    D_values = range(0, 5)  # Seasonal differencing order
-    Q_values = range(0, 5)  # Seasonal moving average order
-    m_values = [12]         # Seasonal period
+    p_values = range(0, 3)  # Autoregressive order
+    d_values = [1]  # Differencing order
+    q_values = range(0, 3)  # Moving average order
+    P_values = range(0, 2)  # Seasonal autoregressive order
+    D_values = range(0, 1)  # Seasonal differencing order
+    Q_values = range(0, 2)  # Seasonal moving average order
+    m_values = [12]  # Seasonal period
 
     # Create all possible combinations of SARIMA parameters
     param_combinations = list(
