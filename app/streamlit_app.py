@@ -57,11 +57,12 @@ periodo_maior_vendas = period_with_most_sales(df)
 vendas_por_quarter_cidade_categoria = sales_by_quarter_city_category(df)
 
 
-# Carregar os dados para previsão - SARIMA
-df_pred = load_data_pred()
-train_data, test_data = prepare_data(df_pred)
-model_sarima_fit = train_sarima(train_data, p=1, d=1, q=1, P=1, D=1, Q=1, m=7)
-forecast_mean, forecast_ci = make_forecast(model_sarima_fit, test_data)
+# # Carregar os dados para previsão - SARIMA
+# df_pred = load_data_pred()
+# train_data, test_data = prepare_data(df_pred)
+# model_sarima_fit = train_sarima(train_data, p=1, d=1, q=1, P=1, D=1, Q=1, m=7)
+# forecast_mean, forecast_ci = make_forecast(model_sarima_fit, test_data)
+
 
 #############################################################
 
@@ -610,6 +611,91 @@ elif option == "Análise de Vendas por Trimestre, Região e Categoria":
     st.plotly_chart(fig, use_container_width=True)
 
 elif option == "Modelo de Previsão de Vendas - SARIMA":
+    # Carregar os dados para previsão - SARIMA
+    df_pred = load_data_pred()
+
+    # Adicionar slider para o parâmetro split_ratio
+    st.header("Parâmetro de divisão dos dados")
+    split_ratio = st.slider(
+        "Proporção de divisão dos dados (treinamento / teste)",
+        min_value=0.1,
+        max_value=0.9,
+        value=0.2,
+        step=0.1,
+    )
+    st.markdown(
+        "split_ratio: A proporção dos dados que será usada para treinamento. O restante será usado para teste."
+    )
+
+    # Preparar os dados com a proporção de divisão selecionada
+    train_data, test_data = prepare_data(df_pred, split_ratio)
+
+    # Adicionar sliders para os parâmetros do modelo SARIMA
+    st.header("Parâmetros do Modelo SARIMA")
+
+    with st.expander("Componentes não sazonais"):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            p = st.slider(
+                "Ordem do componente autoregressivo (p)",
+                min_value=0,
+                max_value=5,
+                value=1,
+            )
+            st.markdown("p: A ordem do componente autoregressivo do modelo.")
+        with col2:
+            d = st.slider(
+                "Grau de diferenciação (d)", min_value=0, max_value=5, value=1
+            )
+            st.markdown("d: O grau de diferenciação envolvido.")
+        with col3:
+            q = st.slider(
+                "Ordem do componente de média móvel (q)",
+                min_value=0,
+                max_value=5,
+                value=1,
+            )
+            st.markdown("q: A ordem do componente de média móvel do modelo.")
+
+    with st.expander("Componentes sazonais"):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            P = st.slider(
+                "Ordem do componente autoregressivo sazonal (P)",
+                min_value=0,
+                max_value=5,
+                value=1,
+            )
+            st.markdown("P: A ordem do componente autoregressivo sazonal do modelo.")
+        with col2:
+            D = st.slider(
+                "Grau de diferenciação sazonal (D)", min_value=0, max_value=5, value=1
+            )
+            st.markdown(
+                "D: O grau de diferenciação envolvido na parte sazonal do modelo."
+            )
+        with col3:
+            Q = st.slider(
+                "Ordem do componente de média móvel sazonal (Q)",
+                min_value=0,
+                max_value=5,
+                value=1,
+            )
+            st.markdown("Q: A ordem do componente de média móvel sazonal do modelo.")
+            m = st.slider(
+                "Número de etapas de tempo para um único período sazonal (m)",
+                min_value=2,
+                max_value=12,
+                value=7,
+            )
+            st.markdown("m: O número de etapas de tempo para um único período sazonal.")
+
+    # Treinar o modelo SARIMA com os parâmetros selecionados
+    model_sarima_fit = train_sarima(train_data, p=p, d=d, q=q, P=P, D=D, Q=Q, m=m)
+
+    # Fazer a previsão
+    forecast_mean, forecast_ci = make_forecast(model_sarima_fit, test_data)
+
     # Cores padrão do projeto
     color_pink_foam_palette_divergent = [
         "#54bebe",
@@ -679,11 +765,10 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
     # Adiciona títulos e rótulos
     fig.update_layout(
         title="Previsão de Vendas Futuras com Modelo SARIMA",
+        title_font=dict(size=32),
         xaxis_title="Data",
         yaxis_title="Total de Vendas",
         height=800,
-        # plot_bgcolor="rgba(0,0,0,0)",
-        # paper_bgcolor="rgba(0,0,0,0)",
     )
 
     # Exibir o gráfico no Streamlit
