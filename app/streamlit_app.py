@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from PIL import Image
+import time
 
 
 from streamlit_option_menu import option_menu
@@ -27,7 +28,13 @@ from logic.calc import (
     sales_by_quarter_city_category,
 )
 
-from logic.pred_calc import load_data_pred, prepare_data, train_sarima, make_forecast
+from logic.pred_calc import (
+    load_data_pred,
+    prepare_data,
+    train_sarima,
+    make_forecast,
+    find_best_sarima_params,
+)
 
 # Carregar o dataset
 df = load_data()
@@ -630,8 +637,25 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
     # Preparar os dados com a proporção de divisão selecionada
     train_data, test_data = prepare_data(df_pred, split_ratio)
 
+    # Botão para encontrar os melhores parâmetros SARIMA
+    if st.button("Encontrar melhores parâmetros SARIMA"):
+        with st.spinner("Buscando os melhores parâmetros..."):
+            start_time = time.time()
+            best_params, best_aic = find_best_sarima_params(train_data)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+        st.write(f"Os melhores parâmetros são: {best_params} com um AIC de: {best_aic}")
+        # st.write(f"Tempo de execução: {elapsed_time} segundos")
+        st.write(f"Tempo de execução: {round(elapsed_time, 6)} segundos")
+
+        # Armazenar os melhores parâmetros no estado da sessão
+        st.session_state["best_params"] = best_params
+
     # Adicionar sliders para os parâmetros do modelo SARIMA
     st.header("Parâmetros do Modelo SARIMA")
+
+    # Default params como valores padrão para os sliders, se disponíveis
+    default_params = st.session_state.get("best_params", [1, 1, 1, 1, 1, 1, 7])
 
     with st.expander("Componentes não sazonais"):
         col1, col2, col3 = st.columns(3)
@@ -640,12 +664,15 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
                 "Ordem do componente autoregressivo (p)",
                 min_value=0,
                 max_value=5,
-                value=1,
+                value=default_params[0],
             )
             st.markdown("p: A ordem do componente autoregressivo do modelo.")
         with col2:
             d = st.slider(
-                "Grau de diferenciação (d)", min_value=0, max_value=5, value=1
+                "Grau de diferenciação (d)",
+                min_value=0,
+                max_value=5,
+                value=default_params[1],
             )
             st.markdown("d: O grau de diferenciação envolvido.")
         with col3:
@@ -653,7 +680,7 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
                 "Ordem do componente de média móvel (q)",
                 min_value=0,
                 max_value=5,
-                value=1,
+                value=default_params[2],
             )
             st.markdown("q: A ordem do componente de média móvel do modelo.")
 
@@ -664,12 +691,15 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
                 "Ordem do componente autoregressivo sazonal (P)",
                 min_value=0,
                 max_value=5,
-                value=1,
+                value=default_params[3],
             )
             st.markdown("P: A ordem do componente autoregressivo sazonal do modelo.")
         with col2:
             D = st.slider(
-                "Grau de diferenciação sazonal (D)", min_value=0, max_value=5, value=1
+                "Grau de diferenciação sazonal (D)",
+                min_value=0,
+                max_value=5,
+                value=default_params[4],
             )
             st.markdown(
                 "D: O grau de diferenciação envolvido na parte sazonal do modelo."
@@ -679,14 +709,14 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
                 "Ordem do componente de média móvel sazonal (Q)",
                 min_value=0,
                 max_value=5,
-                value=1,
+                value=default_params[5],
             )
             st.markdown("Q: A ordem do componente de média móvel sazonal do modelo.")
             m = st.slider(
                 "Número de etapas de tempo para um único período sazonal (m)",
                 min_value=2,
                 max_value=12,
-                value=7,
+                value=default_params[6],
             )
             st.markdown("m: O número de etapas de tempo para um único período sazonal.")
 
@@ -758,7 +788,8 @@ elif option == "Modelo de Previsão de Vendas - SARIMA":
             line=dict(width=0),
             # fillcolor="rgba(255, 0, 0, 0.3)",
             fillcolor="rgba(255, 46, 99, 0.3)",
-            showlegend=False,
+            showlegend=True,
+            name="Intervalo de Confiança",
         )
     )
 
